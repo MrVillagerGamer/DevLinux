@@ -5,7 +5,6 @@
 #include <rtc.h>
 #include <ide.h>
 #include <pci.h>
-#include <fat.h>
 #include <gdt.h>
 
 /*
