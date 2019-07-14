@@ -18,5 +18,7 @@ extern uint8_t ps2_get_button();
 extern uint8_t ps2_await_button();
 extern uint32_t ps2_get_mouse_x();
 extern uint32_t ps2_get_mouse_y();
+extern uint8_t ps2_get_key();
+extern uint8_t ps2_await_key();
 
 #endif

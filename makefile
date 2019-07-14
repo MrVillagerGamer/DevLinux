@@ -1,11 +1,12 @@
-GCCARGS = -m32 -fno-stack-protector
+GCCARGS = -m32 -fno-stack-protector -DDEBUG
 ASMARGS = -felf32
 LNKARGS = -melf_i386
 
 OBJECTS = obj/kernel.o obj/loader.o obj/idt.o \
           obj/idts.o obj/port.o obj/vga.o \
 		  obj/ps2.o obj/rtc.o obj/ide.o \
-		  obj/fat.o obj/pci.o obj/hd.o
+		  obj/pci.o obj/hd.o obj/gdt.o \
+		  obj/gdts.o
 
 obj/%.o: src/%.c
 	gcc $(GCCARGS) -Iinc -c -o $@ $<

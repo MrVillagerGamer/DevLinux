@@ -2,18 +2,19 @@
 #include <idt.h>
 #include <vga.h>
 
-uint8_t buffer[3];
-uint8_t offset = 0;
-uint8_t button = 0;
-uint8_t buttonDown = 0;
+uint8_t ps2_buffer[3];
+uint8_t ps2_offset = 0;
+uint8_t ps2_button = 0;
+bool ps2_button_down = 0;
 
-int8_t mouse_delta_x = 0;
-int8_t mouse_delta_y = 0;
-uint32_t mouse_x = 0;
-uint32_t mouse_y = 0;
+int8_t ps2_mouse_delta_x = 0;
+int8_t ps2_mouse_delta_y = 0;
+uint32_t ps2_mouse_x = 0;
+uint32_t ps2_mouse_y = 0;
 
-uint8_t key_press;
-uint8_t key_release;
+uint8_t ps2_key_press;
+uint8_t ps2_key_release;
+bool ps2_key_down = 0;
 
 void ps2_init_keyboard()
 {
@@ -36,13 +37,26 @@ uint32_t ps2_handler_keyboard(uint32_t esp)
 	uint8_t key = port_in_byte(PS2_DATA_PORT);
 	if((key & 0x80))
 	{
-		key_release = key;
+		ps2_key_release = key & ~0x80;
 	}
 	else
 	{
-		key_press = key;
+		ps2_key_press = key & ~0x80;
+		ps2_key_down = 1;
 	}
 	return esp;
+}
+
+uint8_t ps2_get_key()
+{
+	return ps2_key_press;
+}
+
+uint8_t ps2_await_key()
+{
+	while(!ps2_key_down) {}
+	ps2_key_down = 0;
+	return ps2_key_press;
 }
 
 void ps2_init_mouse()
@@ -62,29 +76,29 @@ void ps2_init_mouse()
 
 uint32_t ps2_handler_mouse(uint32_t esp)
 {
-	buffer[offset] = port_in_byte(PS2_DATA_PORT);
-	offset = (offset + 1) % 3;
-	if(offset == 0)
+	ps2_buffer[ps2_offset] = port_in_byte(PS2_DATA_PORT);
+	ps2_offset = (ps2_offset + 1) % 3;
+	if(ps2_offset == 0)
 	{
-		mouse_delta_x = buffer[1];
-		mouse_delta_y = buffer[2];
-		mouse_x += mouse_delta_x;
-		mouse_y += mouse_delta_y;
-		button = 3;
-		if(buffer[0] & 0x4)
+		ps2_mouse_delta_x = ps2_buffer[1];
+		ps2_mouse_delta_y = ps2_buffer[2];
+		ps2_mouse_x += ps2_mouse_delta_x;
+		ps2_mouse_y += ps2_mouse_delta_y;
+		ps2_button = 3;
+		if(ps2_buffer[0] & 0x4)
 		{
-			button = 2;
-			buttonDown = 1;
+			ps2_button = 2;
+			ps2_button_down = 1;
 		}
-		if(buffer[0] & 0x2)
+		if(ps2_buffer[0] & 0x2)
 		{
-			button = 1;
-			buttonDown = 1;
+			ps2_button = 1;
+			ps2_button_down = 1;
 		}
-		if(buffer[0] & 0x1)
+		if(ps2_buffer[0] & 0x1)
 		{
-			button = 0;
-			buttonDown = 1;
+			ps2_button = 0;
+			ps2_button_down = 1;
 		}
 	}
 	return esp;
@@ -92,24 +106,24 @@ uint32_t ps2_handler_mouse(uint32_t esp)
 
 uint32_t ps2_get_mouse_x()
 {
-	return mouse_x;
+	return ps2_mouse_x;
 }
 
 uint32_t ps2_get_mouse_y()
 {
-	return mouse_y;
+	return ps2_mouse_y;
 }
 
 uint8_t ps2_get_button()
 {
-	return button;
+	return ps2_button;
 }
 
 uint8_t ps2_await_button()
 {
-	while(!buttonDown) { }
-	buttonDown = 0;
-	return button;
+	while(!ps2_button_down) { }
+	ps2_button_down = 0;
+	return ps2_button;
 }
 
 

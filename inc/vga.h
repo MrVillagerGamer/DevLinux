@@ -30,7 +30,14 @@ extern void vga_text_scroll_down();
 extern void vga_text_set_cursor_shape(uint8_t, uint8_t);
 extern void vga_text_set_cursor_pos(uint8_t, uint8_t);
 extern void vga_set_video_mode(uint8_t);
-extern void vga_graph_put_pixel(uint16_t,uint16_t);
+extern void vga_graph_set_bounds(uint16_t,uint16_t,uint16_t,uint16_t);
+extern void vga_graph_draw_pixel(uint16_t,uint16_t);
+extern void vga_graph_draw_rect(uint16_t,uint16_t,uint16_t,uint16_t);
+extern void vga_graph_draw_pixel(uint16_t,uint16_t);
+extern void vga_graph_clear_screen();
+extern void vga_text_put_char_big(uint8_t);
+extern void vga_text_put_string_big(uint8_t*);
+
 //extern void vga_text_log_ok(uint8_t*);
 extern void vga_text_log_error(uint8_t*);
 extern void vga_text_log_warn(uint8_t*);

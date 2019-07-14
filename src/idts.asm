@@ -13,7 +13,7 @@ irq_entry_handler%1:
 	push word [INTN]
 	push esp
 	call int_handle
-	pop esp
+	pop eax
 	pop word [INTN]
 	popad
 	iret
@@ -27,7 +27,7 @@ int_entry_handler%1:
 	push word [INTN]
 	push esp
 	call int_handle
-	pop esp
+	pop eax
 	pop word [INTN]
 	popad
 	iret
@@ -54,10 +54,3 @@ load_idt:
 	mov edx, [esp+4]
 	lidt [edx]
 	ret
-	
-	
-	
-	
-	
-	
-	
